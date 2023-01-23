@@ -92,7 +92,7 @@ from astropy import constants as const # import astropy constants
 # 
 # $v_{esc}^2 = 2|\Phi| = 2 \int G \frac{\rho(r)}{r}dV $ 
 # 
-# and assuming the Milky Way is well modeled by a Hernquist Sphere with a scale radius of $a$= 30 kpc, what is the minimum mass of the Milky Way (in units of $10^{12}$ M$_\odot$) ?  
+# and assuming the Milky Way is well modeled by a Hernquist Sphere with a scale radius of $a$= 30 kpc, what is the minimum mass of the Milky Way (in units of M$_\odot$) ?  
 # 
 # How does this compare to estimates of the mass assuming the Isothermal Sphere model at 260 kpc (from your answer above)
 
