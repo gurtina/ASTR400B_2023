@@ -259,7 +259,7 @@ if __name__ == '__main__' :
     # MW:   store the position and velocity COM
     MW_COM_p = MW_COM.COM_P(0.1)
     print(MW_COM_p)
-    MW_COM_v = MW_COM.COM_V(MW_COMP[0], MW_COMP[1], MW_COMP[2])
+    MW_COM_v = MW_COM.COM_V(MW_COM_p[0], MW_COM_p[1], MW_COM_p[2])
     print(MW_COM_v)
 
     # now write your own code to answer questions
