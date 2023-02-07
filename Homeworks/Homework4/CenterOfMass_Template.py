@@ -183,7 +183,7 @@ class CenterOfMass:
             r_COM = r_COM2
 
             # create an array (np.array) to store the COM position                                                                                                                                                       
-            p_COM = np.array[x_COM, y_COM, z_COM]
+            p_COM = np.array([x_COM, y_COM, z_COM])
 
         # set the correct units using astropy and round all values
         # and then return the COM positon vector
