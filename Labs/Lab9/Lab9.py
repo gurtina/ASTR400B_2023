@@ -3,9 +3,7 @@
 # 
 # Tutorial to make some interesting plots with widgets and the simulaton data ! 
 # 
-# To do this lab you will need to sftp into nimoy to get the highres data files for this lab:
-# MW_000.txt, MW_005.txt and/or MW_400.txt
-# If you don't have enough space on your computer you can use the low res files. 
+# Note that the images in this lab will look a lot better if you use the high res files. 
 
 # Graphical widgets -- helpful functions to make a "graphical user interface", or GUI.
 # https://matplotlib.org/stable/api/widgets_api.html
