@@ -16,7 +16,6 @@
 # 
 
 
-
 import matplotlib.widgets as mwidgets  # get access to the widgets
 
 
@@ -36,6 +35,65 @@ from MassProfile import MassProfile
 # NOTE: it is more organized and easier to debug if you keep functions in separate scripts 
 # and then call them when you want to e.g. make plots or do some analysis. 
 from contour import density_contour
+
+
+# # PART A : M-$\sigma$ Relation
+# 
+# - Compute the velocity dispersion of the bulge in the Simulated M31.
+# 
+# - create a function that defines the  M-$\sigma$ relation, from  Kormendy & Ho 2013 (eqn 7)
+# 
+# $\left (\frac{M_{BH}}{10^9 M_\odot} \right ) = \alpha \left( \frac{\sigma}{\sigma_0}\right)^\beta $  
+# 
+# $\alpha$ =  0.309, 
+# $\beta$ = 4.38, 
+# $\sigma_0$ = 200 km/s
+# 
+# Comparing to the Simulation:
+# 
+# - What mass black hole would you expect from the data? How does this compare to the mass of the SMBH in the real M31 (5-23$\times 10^7$ M$_\odot$) 
+
+
+
+# Create a COM of object for MW Using Code from Assignment 4
+# Here we are going to use bulge particles explicitly since we care about 
+# the dynamics of the bulge
+
+
+
+
+# Compute COM of M31 bulge
+
+
+
+
+# Determine positions of bulge particles relative to COM 
+
+
+# Determine the total magnitude of position vector from COM
+
+
+# Determine the velocities of bulge particles relative to COM motion
+
+
+
+
+# average velocity of bulge (within 5 kpc) 
+
+
+
+
+# Standard Deviation. ( 1 sigma)
+
+
+
+
+# Define Msigma 
+
+
+# # PART B:  Widgets
+
+# # PART 1
 
 
 
@@ -309,6 +367,7 @@ rs = mwidgets.RectangleSelector( ax[0],                        # the axes to att
 
 
 # Load in a different Snapshot
+
 
 
 
