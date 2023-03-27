@@ -1,5 +1,4 @@
 
-
 # # In Class Lab 9
 # 
 # Tutorial to make some interesting plots with widgets and the simulaton data ! 
@@ -15,8 +14,6 @@
 # 
 # `matplotlib` provides a number of simple widgets which automatically create an event loop for us. One can create a widget instance, and then tell the widget what function to run when something happens to the widget. Such a function is called a *callback* -- the event loop calls back to the function we give it in order to take some action before starting up again.
 # 
-
-
 
 
 
@@ -62,6 +59,7 @@ MW_Disk_vy = COM.vy - COMV[1].value
 
 
 
+
 # Plot the disk of the MW with contours. 
 
 
@@ -98,8 +96,6 @@ label_size = 22
 matplotlib.rcParams['xtick.labelsize'] = label_size 
 matplotlib.rcParams['ytick.labelsize'] = label_size
 
-plt.show()
-
 
 # # Part 2  Zooming in on a plot with widgets
 # 
@@ -124,11 +120,12 @@ def callbackRectangle1( click, release ):
     extent = [ click.xdata, release.xdata, click.ydata, release.ydata ]
     print( f"box extent is {extent}") 
     
-    # ADD - too zoom in reset the axes to the clicked box size
+    # ADD - to zoom in, reset the axes to the clicked box size
 
 
     # save the file as a .png
     # comment this out if your code is giving you problems
+
 
 
 
@@ -138,6 +135,7 @@ def onKeyPressed(event):
 
 if event.key in ['R', 'r']:
     # ADD - to zoom back out reset the axes
+
 
 
 
@@ -151,7 +149,7 @@ plt.colorbar(label='Number  of  stars  per  bin')
 
 # make the contour plot
 # x pos, y pos, contour res, contour res, axis, colors for contours.
-density_contour(MW_Disk_x, MW_Disk_y, 80, 80, ax=ax,  colors=['white'])
+density_contour(MW_Disk_x, MW_Disk_y, 80, 80, ax=ax,                 colors=['white'])
    
 
     
@@ -176,10 +174,9 @@ plt.ylabel('y (kpc)', fontsize=22)
 
 # ADDED THIS
 # Press 'R' key to reset AND THEN
-# to detect the 'R' key, click the track pad to reset the image
+# to detect the 'R' key, click escape to reset the image
 plt.connect("key_press_event", onKeyPressed)
 
-plt.show()
 
 # # Part C    Connecting Morphology to Kinematics
 # 
@@ -206,12 +203,77 @@ plt.show()
 
 
 
-# Step 1) Copy over the call back function and the onkeypressed function
+
+def callbackRectangle2( click, release ):
+    print( f"button {click.button} pressed" )
+    print( f"button {release.button} released" )
+    extent = [ click.xdata, release.xdata, click.ydata, release.ydata ]
+    print( f"box extent is {extent}") 
+    
+    # Add a yellow rectangle to where we selected a region rather than zooming in
+    # xy need bottom left corner
+    width = np.abs(release.xdata - click.xdata)
+    height = np.abs(click.ydata-release.ydata )
+    
+    # Create a rectangle 
+    Rect = plt.Rectangle( (click.xdata,click.ydata),  width, height, fill=False, color='yellow', linewidth=3)
+    # xy, width, height, angle=0.0, **kwargs
+    ax[0].add_patch(Rect) # add the rectangle to the axis object.
+    
+    
+    # Plotting the corresponding points on the left panel
+    # make sure pick rectangle from bottom left corner upwards 
+    index = np.where( (MW_Disk_x > click.xdata) & (MW_Disk_x < release.xdata)& (MW_Disk_y > click.ydata )         & (MW_Disk_y < release.ydata))
+    ax[1].scatter(MW_Disk_x[index],MW_Disk_vy[index])
+    
+    # save the file as a .png
+    # comment this out if your code is giving you problems
+    plt.savefig("Lab9_Position_Velocity.png")
+
+    
 
 
 
 
+# Now also want to see the corrsponding phase diagram for that region
 
+
+fig,ax = plt.subplots(nrows=1, ncols=2, figsize=(30,10), constrained_layout=True)    
+        #   ax[0] for Position
+        #   ax[1] for Velocity 
+
+                                                  
+ax[0].hist2d(MW_Disk_x,MW_Disk_y, bins=200, norm=LogNorm(), cmap='magma')
+
+density_contour(MW_Disk_x, MW_Disk_y, 80, 80, ax=ax[0],                 colors=['red','white','white', 'white', 'white', 'white', 'white', 'white'])
+#set axis limits
+ax[0].set_ylim(-30,30)
+ax[0].set_xlim(-30,30)  
+
+# Add axis labels
+ax[0].set_xlabel('x (kpc)', fontsize=15)
+ax[0].set_ylabel('y (kpc)', fontsize=15)
+
+
+# Phase Diagram : X vs. VY 
+
+ax[1].hist2d(MW_Disk_x,MW_Disk_vy, bins=500, norm=LogNorm(), cmap='magma')
+ax[1].set_xlim(-30,30)
+
+# Add axis labels
+ax[1].set_xlabel('x (kpc)', fontsize=15)
+ax[1].set_ylabel('Velocity Y Component (km/s)', fontsize=15)
+
+# Add the circular velocity
+ax[1].plot(R, -Vcirc, color="blue")
+ax[1].plot(-R, Vcirc, color="blue")
+                        
+    
+rs = mwidgets.RectangleSelector( ax[0],                        # the axes to attach to
+                           callbackRectangle2,         # the callback function
+                           button=[1, 3],             # allow us to use left or right mouse button
+                           minspanx=5, minspany=5,    # don't accept a box of fewer than 5 pixels
+                           spancoords='pixels' )      # units for above
 
 
 # # Part D:  Flip it around : connect kinematics to morphology
@@ -223,6 +285,11 @@ plt.show()
 
 # Copy over the Call back function and the onkeypressed function from Part C
 # flip the axes ax[0] < --- > ax[1]
+
+
+
+
+
 
 
 
@@ -253,7 +320,9 @@ plt.show()
 
 
 
+
 # Copy over the Call back function from Part C
+# Edit so that it overplots a scatter of particles from the new snapshot
 
 
 
