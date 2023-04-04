@@ -26,9 +26,9 @@ from GalaxyMass import ComponentMass
 
 # # M33AnalyticOrbit - Version 2
 # 
-# 1. Add a new variable to the initializer for the class,  `self.M33halo`,  that defines M33's halo mass.
+# 1. Add a new variable to the initialization for the class,  `self.M33halo`,  that defines M33's halo mass.
 # 
-# 2. Add a new varaible to the initialization of the class, `self.Vc`, the circular speed at large radii from M31. Let's assume this is flat at $V_c$ = 200 km/s in the M31 halo outskirts.  or 230 from Homework 5
+# 2. Add a new varaible to the initialization of the class, `self.Vc`, the circular speed of the halo at large radii from M31. 
 # 
 # 3. Add a function called `DynamicalFriction` that takes as inputs (Msat,r,v), and computes the acceleration, assuming an isothermal sphere profile for the dark matter halo of M31.
 # 
