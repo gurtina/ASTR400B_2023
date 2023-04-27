@@ -236,59 +236,9 @@ plt.ylabel('distance [Mpc]')
 
 
 
-# # Part G
-# We can characterize how well the model fits the data by computing the  "$\chi^2$" of the model with respect to the data
-# 
-# $$ \chi = \sqrt{ \frac{\sum_i (\textrm{model}(z_i) - r_i)}{N-1} } $$
-# 
-# Let's write a function to do this:
 
 
-
-def chi(model, data):
-    """ Function to compute the deviation between a model and data 
-            Chi = sqrt (Sum (deviation between model and data) / N-1)
-    
-    PARAMETERS
-    ---------
-    model: `np.darray`
-        Array containing the model to be compared to the data
-        
-    data: `np.array`
-        Array containing the data to be compared to the model
-    
-    OUTPUTS
-    -------
-    Chi: `float`
-        Describes how well the model fits the data 
-    
-    """
-
-    return 
-
-
-# The $\chi$ of our linear model is then
-
-
-
-
-
-
-# The $\chi$ of our Einstein-DeSitter Luminosity Distance model is then
-
-
-
-
-
-
-# The $\chi$ of our BenchMark model is then
-
-
-
-
-
-
-# To test this more rigorously we could run through different values of Omega_M and Omega_L and generate probability contours (rather than $\chi$)
+# To test this more rigorously we could run through different values of Omega_M and Omega_L and generate probability contours 
 # 
 # ![title](scp2.1.png)
 
