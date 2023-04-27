@@ -1,5 +1,5 @@
 
-# # In Class Lab 14
+# # In Class Lab 14 Solution
 # 
 # Tutorial to make some interesting plots with widgets and the simulaton data ! 
 # 
@@ -39,10 +39,10 @@ from contour import density_contour
 
 
 
-
 # Load in disk particles centered on the MW
 # this is from the HighRes data files on nimoy so it might take a bit of time to load
 COM = CenterOfMass("MW_000.txt",2)
+ # "MWa" was teh low res files
 
 
 
@@ -66,21 +66,16 @@ MW_Disk_vy = COM.vy - COMV[1].value
 # MW Disk Density 
 fig, ax= plt.subplots(figsize=(10, 10))
 
-## ADD HERE
-# plot the particle density for MW using plt.hist2d 
-# plt.hist2d(pos1,pos2, bins=, norm=LogNorm(), cmap= )
-# cmap options: https://matplotlib.org/3.1.0/tutorials/colors/colormaps.html  
-#   e.g. 'magma', 'viridis'
-
-
+# plot the particle density for M31 
+# can modify bin number (e.g. bin =100 for low res files)
+plt.hist2d(MW_Disk_x,MW_Disk_y, bins=200, norm=LogNorm(), cmap='magma')
+plt.colorbar(label='Number  of  stars  per  bin')
 
 
 #### ADD HERE 
 # call density_contour to add contours
 # density_contour(x pos, y pos, contour res, contour res, axis, colors=[colors,colors])
-
-
-
+density_contour(MW_Disk_x, MW_Disk_y, 80, 80, ax=ax,                colors=['white'])
 
 
 # Add axis labels
@@ -97,7 +92,7 @@ matplotlib.rcParams['xtick.labelsize'] = label_size
 matplotlib.rcParams['ytick.labelsize'] = label_size
 
 
-# # Part 2  Zooming in on a plot with widgets
+# # Part B  Zooming in on a plot with widgets
 # 
 # 
 # We can catch characters typed on the keyboard -- *keypress events* -- by connecting a "key_press_event" to a callback function which takes an event as an argument.
@@ -111,6 +106,7 @@ matplotlib.rcParams['ytick.labelsize'] = label_size
 # 
 # Note that click and release are not really that! Click contains the more-negative values and release the more positive values of both x and y coordinates.
 
+# In[10]:
 
 
 
@@ -120,21 +116,22 @@ def callbackRectangle1( click, release ):
     extent = [ click.xdata, release.xdata, click.ydata, release.ydata ]
     print( f"box extent is {extent}") 
     
-    # ADD - to zoom in, reset the axes to the clicked box size
-
+    # ADD - too zoom in reset the axes to the clicked box size
+    ax.set_xlim( click.xdata, release.xdata ) # added
+    ax.set_ylim( click.ydata, release.ydata ) # added
 
     # save the file as a .png
     # comment this out if your code is giving you problems
+    plt.savefig("Lab14_Density_Zoom.png")
 
 
-
-
-
-# add the  ability to reset the image
+    # add the  ability to reset the image
 def onKeyPressed(event):
-
-if event.key in ['R', 'r']:
-    # ADD - to zoom back out reset the axes
+    
+    if event.key in ['R', 'r']:
+        # ADD - to zoom back out reset the axes
+        ax.set_xlim(-30,30 ) # added
+        ax.set_ylim(-30,30) # added
 
 
 
@@ -174,7 +171,7 @@ plt.ylabel('y (kpc)', fontsize=22)
 
 # ADDED THIS
 # Press 'R' key to reset AND THEN
-# to detect the 'R' key, click escape to reset the image
+# to detect the 'R' key, hit escape to reset the image
 plt.connect("key_press_event", onKeyPressed)
 
 
@@ -187,18 +184,18 @@ plt.connect("key_press_event", onKeyPressed)
 # 
 # Relect a section of the density plot and see where the particles are on the phase diagram
 
+# In[13]:
 
 
 # ADD MassProfile Object.
 
+MWCirc = MassProfile("MW",0)
 
 
 
 
-# Add an array for radii up to 40 kpc
-
-
-# Store Vcirc 
+R = np.arange(0.001,30,0.5)
+Vcirc = MWCirc.circularVelocityTotal(R)
 
 
 
@@ -209,6 +206,10 @@ def callbackRectangle2( click, release ):
     print( f"button {release.button} released" )
     extent = [ click.xdata, release.xdata, click.ydata, release.ydata ]
     print( f"box extent is {extent}") 
+    
+    # No longer need to zoom  
+    #ax[0].set_xlim( click.xdata, release.xdata ) # added
+    #ax[0].set_ylim( click.ydata, release.ydata ) # added
     
     # Add a yellow rectangle to where we selected a region rather than zooming in
     # xy need bottom left corner
@@ -228,7 +229,7 @@ def callbackRectangle2( click, release ):
     
     # save the file as a .png
     # comment this out if your code is giving you problems
-    plt.savefig("Lab9_Position_Velocity.png")
+    plt.savefig("Lab14_Position_Velocity.png")
 
     
 
@@ -275,6 +276,12 @@ rs = mwidgets.RectangleSelector( ax[0],                        # the axes to att
                            minspanx=5, minspany=5,    # don't accept a box of fewer than 5 pixels
                            spancoords='pixels' )      # units for above
 
+#button 1 is left mouse button
+
+# to detect the 'R' key,  press escape to reset the image
+plt.connect("key_press_event", onKeyPressed)
+
+
 
 # # Part D:  Flip it around : connect kinematics to morphology
 # 
@@ -283,23 +290,84 @@ rs = mwidgets.RectangleSelector( ax[0],                        # the axes to att
 
 
 
-# Copy over the Call back function and the onkeypressed function from Part C
-# flip the axes ax[0] < --- > ax[1]
+
+def callbackRectangle3( click, release ):
+    print( f"button {click.button} pressed" )
+    print( f"button {release.button} released" )
+    extent = [ click.xdata, release.xdata, click.ydata, release.ydata ]
+    print( f"box extent is {extent}") 
+    
+
+    # xy need bottom left corner
+    width = np.abs(release.xdata - click.xdata)
+    height = np.abs(release.ydata - click.ydata )
+    Rect = plt.Rectangle( (click.xdata,click.ydata),  width, height, fill=False, color='yellow', linewidth=3)
+    # xy, width, height, angle=0.0, **kwargs
+    ax[0].add_patch(Rect)
+    
+    # CHANGE HERE
+    # make sure pick rectangle from bottom left corner upwards 
+    # here switch y --> vy 
+    index = np.where( (MW_Disk_x > click.xdata) & (MW_Disk_x < release.xdata)& (MW_Disk_vy > click.ydata )         & (MW_Disk_vy < release.ydata))
+    # JUST NEED TO MODIFY THIS LINE
+    ax[1].scatter(MW_Disk_x[index],MW_Disk_y[index])
+    
+    
+    # save the file as a .png
+    # CHANGE Filename
+    plt.savefig("Lab14_Velocity_Position.png")
+
+    
 
 
 
 
-
-
-
-
-
-# Copy over the Density and phase diagram code
 # flip the axes ax[0]<--> ax[1]
 
 
+# plot the particle density for MW 
+fig,ax = plt.subplots(nrows=1, ncols=2, figsize=(30,10), constrained_layout=True) 
+        #   ax[0] for Velocity  # HERE
+        #   ax[1] for Position    
+                                                      
+ax[1].hist2d(MW_Disk_x,MW_Disk_y, bins=200, norm=LogNorm(), cmap='magma')
+# plt.colorbar()
+# ax[0].scatter_density(MW_Disk.x, MW_Disk.z, norm=norm)
+density_contour(MW_Disk_x, MW_Disk_y, 80, 80, ax=ax[1],                 colors=['red','white','white', 'white', 'white', 'white', 'white', 'white'])
+#set axis limits
+ax[1].set_ylim(-30,30)
+ax[1].set_xlim(-30,30)  
+
+# Add axis labels
+ax[1].set_xlabel('x (kpc)', fontsize=15)
+ax[1].set_ylabel('y (kpc)', fontsize=15)
 
 
+# Phase Diagram : X vs. VY 
+
+ax[0].hist2d(MW_Disk_x,MW_Disk_vy, bins=500, norm=LogNorm(), cmap='magma')
+ax[0].set_xlim(-30,30)
+
+# Add axis labels
+ax[0].set_xlabel('x (kpc)', fontsize=15)
+ax[0].set_ylabel('Velocity Y Component (km/s)', fontsize=15)
+
+# Add the circular velocity
+ax[0].plot(R, -Vcirc, color="blue")
+ax[0].plot(-R, Vcirc, color="blue")
+                        
+    
+rs = mwidgets.RectangleSelector( ax[0],                        # the axes to attach to
+                           callbackRectangle3,         # the callback function
+                           button=[1, 3],             # allow us to use left or right mouse button
+                                                      #button 1 is left mouse button
+                           minspanx=5, minspany=5,    # don't accept a box of fewer than 5 pixels
+                           spancoords='pixels' )      # units for above
+
+
+
+# to detect the 'R' key press to reset the image
+#plt.connect("key_press_event", onKeyPressed)
 
 
 
@@ -308,26 +376,107 @@ rs = mwidgets.RectangleSelector( ax[0],                        # the axes to att
 
 
 
-# Load in a different Snapshot
-
+# Load in a different snapshot
+#COM_2 = CenterOfMass("MW_450.txt",2)
+COM_2 = CenterOfMass("MW_005.txt",2)
 
 
 
 
 
 # Compute COM of M31 using disk particles
-
+COMP_2 = COM_2.COM_P(0.1, 2)
 # Determine positions of disk particles relative to COM 
+MW_Disk_2_x = COM_2.x - COMP_2[0].value 
+MW_Disk_2_y = COM_2.y - COMP_2[1].value 
 
 
 
 
-# Copy over the Call back function from Part C
-# Edit so that it overplots a scatter of particles from the new snapshot
+
+def callbackRectangle4( click, release ):
+    print( f"button {click.button} pressed" )
+    print( f"button {release.button} released" )
+    extent = [ click.xdata, release.xdata, click.ydata, release.ydata ]
+    print( f"box extent is {extent}") 
+    
+    # ADD - too zoom in reset the axes
+    #ax[0].set_xlim( click.xdata, release.xdata ) # added
+    #ax[0].set_ylim( click.ydata, release.ydata ) # added
+    
+    # xy need bottom left corner
+    width = np.abs(release.xdata - click.xdata)
+    height = np.abs(click.ydata-release.ydata )
+    Rect = plt.Rectangle( (click.xdata,click.ydata),  width, height, fill=False, color='yellow', linewidth=3)
+    # xy, width, height, angle=0.0, **kwargs
+    ax[0].add_patch(Rect)
+    
+    index = np.where( (MW_Disk_x > click.xdata) & (MW_Disk_x < release.xdata)& (MW_Disk_y > click.ydata )         & (MW_Disk_y < release.ydata))
+    # ADJUST HERE 
+    ax[1].scatter(MW_Disk_2_x[index],MW_Disk_2_y[index])
+
+    # save the file as a .png
+    # CHANGE Filename
+    plt.savefig("Lab14_MW0_vs_MW5.png")
+
+    
+  
+
+
+
+# What if we compared to another point in time
+
+
+    
+fig,ax = plt.subplots(nrows=1, ncols=2, figsize=(25,10))    
+        #   ax[0] for Position
+        #   ax[1] for Velocity 
+  
+                                                      
+ax[0].hist2d(MW_Disk_x,MW_Disk_y, bins=200, norm=LogNorm(), cmap='magma')
+# plt.colorbar()
+density_contour(MW_Disk_x, MW_Disk_y, 80, 80, ax=ax[0],                 colors=['white'])
+#set axis limits
+ax[0].set_ylim(-30,30)
+ax[0].set_xlim(-30,30)  
+
+# Add axis labels
+ax[0].set_xlabel('x (kpc)', fontsize=15)
+ax[0].set_ylabel('y (kpc)', fontsize=15)
+
+
+# SNAPSHOT 400  MODIFIED HERE 
+
+ax[1].hist2d(MW_Disk_2_x, MW_Disk_2_y, bins=200, norm=LogNorm(), cmap='magma')
+density_contour(MW_Disk_2_x, MW_Disk_2_y, 80, 80, ax=ax[1],                 colors=['white'])
+
+# Set axis limits
+ax[1].set_xlim(-30,30)
+ax[1].set_ylim(-30,30)
+
+#ax[1].set_xlim(-80,80)
+#ax[1].set_ylim(-80,80)
+
+
+# Add axis labels
+ax[1].set_xlabel('x (kpc)', fontsize=15)
+ax[1].set_ylabel('y (kpc)', fontsize=15)
+
+                        
+    
+rs = mwidgets.RectangleSelector( ax[0],                        # the axes to attach to
+                           callbackRectangle4,         # the callback function
+                           button=[1, 3],             # allow us to use left or right mouse button
+                           minspanx=5, minspany=5,    # don't accept a box of fewer than 5 pixels
+                           spancoords='pixels' )      # units for above
+
+#button 1 is left mouse button
+
+# to detect the 'R' key press to reset the image
+#plt.connect("key_press_event", onKeyPressed)
 
 
 
 
-# Copy over the plotting script from Part C
-# Instead of the phase plot, have the second panel be the MW at a different snapshot
+
 
